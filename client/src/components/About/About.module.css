@@ -1,0 +1,10 @@
+.wrapper {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.header__wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}

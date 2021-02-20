@@ -1,0 +1,85 @@
+.app__wrapper {
+    width: 30%;
+    margin: 0 auto;
+}
+
+.title {
+}
+
+.wrapper {
+    margin-top: 50px;
+    padding-bottom: 10px;
+    box-shadow: 3px 3px 15px 1px dimgray,-3px -3px 15px 1px lightgrey;
+}
+
+.item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px;
+}
+
+.item__btn {
+    justify-content: flex-end;
+}
+
+.btn {
+    margin: 0 20px;
+    padding: 10px;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+}
+
+.label {
+    font-size: 18px;
+    line-height: 24px;
+}
+
+.input {
+    width: 75%;
+    box-sizing: border-box;
+    border: none;
+    border-bottom: 2px solid lightgrey;
+    font-size: 18px;
+    line-height: 24px;
+    outline: none;
+}
+
+.message {
+    position: relative;
+    box-sizing: border-box;
+    display: block;
+    width: 100%;
+    margin: 8px 0;
+    padding-right: 15px;
+    padding-left: 55px;
+    font-size: 12px;
+    line-height: 18px;
+    font-style: italic;
+    color: lawngreen;
+}
+
+.message__error {
+    color: tomato;
+}
+
+.message__error::before,
+.message__error::after {
+    content: '';
+    position: absolute;
+    top: 8px;
+    left: 20px;
+    width: 20px;
+    height: 2px;
+    background-color: tomato;
+}
+
+.message__error::before {
+    webkit-transform: rotate(45deg);
+    transform: rotate(45deg);
+}
+
+.message__error::after {
+    webkit-transform: rotate(-45deg);
+    transform: rotate(-45deg);
+}

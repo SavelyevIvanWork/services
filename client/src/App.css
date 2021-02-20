@@ -1,0 +1,46 @@
+.btn {
+  display: block;
+  border: none;
+  padding: 0;
+  background: #fff;
+  outline: none;
+}
+
+.btn__logout {
+  display: block;
+  border: 1px solid lightgrey;
+  border-radius: 5px;
+  background: #fff;
+  outline: none;
+  padding: 10px 15px;
+}
+
+.btn__logout:hover {
+  border: 1px solid black;
+  cursor: pointer;
+}
+
+.wrapper {
+  width: 30%;
+  margin: 0 auto;
+}
+
+.title-wrapper {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+}
+
+.title {
+  margin-bottom: 50px;
+  font-size: 30px;
+}
+
+.active {
+  text-decoration: line-through;
+}
+
+.hidden {
+  display: none;
+}
+

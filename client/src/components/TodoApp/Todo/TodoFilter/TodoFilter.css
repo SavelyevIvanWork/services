@@ -1,0 +1,37 @@
+.todo-filter {
+    display: flex;
+    padding: 5px 25px;
+}
+
+.todo-filter__btn-wrapper {
+    display: flex;
+}
+
+.todo-filter__btn {
+    margin-right: 3px;
+    margin-left: 3px;
+    padding: 10px 5px;
+    border: 1px solid #fff;
+    border-radius: 5px;
+}
+
+.todo-filter__btn--active {
+    border: 1px solid grey;
+}
+
+.todo-filter__btn--lightgrey {
+    cursor: pointer;
+    color: lightgrey;
+}
+
+.todo-filter__btn--lightgrey:hover {
+    color: grey;
+}
+
+.todo-filter__btn--tasks-left {
+    margin-right: 90px;
+}
+
+.todo-filter__btn--clear-completed {
+    margin-left: 50px;
+}

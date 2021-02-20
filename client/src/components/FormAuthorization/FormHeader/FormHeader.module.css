@@ -1,0 +1,9 @@
+.wrapper {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+}
+
+.link {
+    color: black;
+}
