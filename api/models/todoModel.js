@@ -5,19 +5,19 @@ const mongoose = require('mongoose');
 // Создаём схему
 
 const Schema = mongoose.Schema;
-const TodoModelSchema = new Schema({
+const TodoSchema = new Schema({
     id: String,
     completed: Boolean,
     message: String,
-    user: { type: Schema.Types.ObjectId, ref: 'User' }
+    user: String
 });
 
 // Компилируем модель из схемы
-const TodoModel = mongoose.model('TodoModel', TodoModelSchema);
+const Todo = mongoose.model('Todo', TodoSchema);
 
 //Создаём экземпляр модели
-exports.todoCreate = async function (userId,{completed, message}) {
-    const todo = new TodoModel({
+exports.todoCreate = async function (userId, {message}) {
+    const todo = new Todo({
         user: userId,
         completed: false,
         message
@@ -26,24 +26,34 @@ exports.todoCreate = async function (userId,{completed, message}) {
     return await todo.save();
 }
 
+exports.taskSearch = function (userId, id) {
+    return Todo.findOne({user: userId, _id: id})
+}
+
 exports.todoGet = function (userId) {
-    return TodoModel.find({user: userId})
+    console.log(userId)
+    return Todo.find({user: userId})
 }
 
 exports.todoUpdate = function (userId, id, completed) {
-    return TodoModel.findOneAndUpdate({_id: id, user: userId}, {completed}, {
-        new: true
-    })
+    try {
+        return Todo.findOneAndUpdate({_id: id, user: userId}, {completed}, {
+            new: true
+        })
+    } catch (error) {
+        console.log(error)
+    }
 }
 
 exports.allTodoUpdate = function (userId) {
-   return TodoModel.updateMany({user: userId}, {completed: true})
+    return Todo.updateMany({user: userId}, {completed: true})
 }
 
 exports.todoDelete = function (userId, id) {
-     return TodoModel.deleteOne({_id: id, user: userId});
+    return Todo.findOneAndDelete({_id: id, user: userId})
+
 }
 
-exports.allTodoDelete = function (userId, completed) {
-    return TodoModel.deleteMany({completed, user: userId});
+exports.allTodoDelete = function (userId) {
+    return Todo.deleteMany({user: userId, completed: true})
 }

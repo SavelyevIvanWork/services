@@ -7,6 +7,7 @@ export const authorizationFailureAC = (error, message) => {
 }
 
 export const userLogoutAC = () => {
+    localStorage.clear();
     return {type: USER_LOGOUT}
 }
 

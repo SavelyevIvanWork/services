@@ -1,4 +1,4 @@
-import {userLogoutAC} from "../../../reducers/FormReducer/action-creator";
+import {userLogoutAC} from "../../../reducers/AuthReducer/action-creator";
 import {useDispatch} from "react-redux";
 
 const Header = () => {

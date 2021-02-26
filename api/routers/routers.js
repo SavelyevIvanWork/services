@@ -6,11 +6,11 @@ const userController = require("../controllers/userController");
 const {check} = require('express-validator')
 const {verifyUser} = require("../verifyUser");
 require('dotenv').config();
+const jwt = require('jsonwebtoken');
 
 const passport = require('passport')
     , FacebookStrategy = require('passport-facebook').Strategy;
-const {generateAccessToken} = require("../generateAccessToken");
-const {UserModels} = require("../models/userModel");
+const {User} = require("../models/userModel");
 
 // const corsOptions = {
 //         "origin": "*",
@@ -35,9 +35,9 @@ passport.use(new FacebookStrategy({
         callbackURL: "http://localhost:8080/todo/auth/facebook/callback"
     },
     function(accessToken, refreshToken, profile, cb) {
-        UserModels.findOne({ facebookId: profile.id }, async function(err, user) {
+        User.findOne({ facebookId: profile.id }, async function(err, user) {
             if(!user) {
-                const newUser = new UserModels({ facebookId: profile.id });
+                const newUser = new User({ facebookId: profile.id });
                 await newUser.save()
                 return cb(null, newUser);
             }
@@ -48,6 +48,13 @@ passport.use(new FacebookStrategy({
         });
     }
 ));
+
+const generateAccessToken = (id) => {
+    const payload = {
+        id
+    }
+    return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: '24h'})
+}
 
 router.get('/auth/facebook', passport.authenticate('facebook', {session: false}));
 

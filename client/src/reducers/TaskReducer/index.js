@@ -14,10 +14,10 @@ const initialState = {
     tasks: [],
     newTask: '',
     loading: false,
-    error: null,
+    error: false
 }
 
-const Index = (state = initialState, action) => {
+const TaskReducer = (state = initialState, action) => {
     switch (action.type) {
         case UPDATE_NEW_TASK:
             return {
@@ -49,7 +49,8 @@ const Index = (state = initialState, action) => {
                     task.completed = true
                     return task
                 })],
-                loading: false
+                loading: false,
+                error: false
             }
 
         case ALL_TASK_DELETE:
@@ -80,7 +81,8 @@ const Index = (state = initialState, action) => {
                 ...state,
                 newTask: '',
                 tasks: [...state.tasks, changeId(action.todo)],
-                loading: false
+                loading: false,
+                error: false
             }
         case ADD_TODO_ALL_SUCCESS:
             return {
@@ -90,7 +92,8 @@ const Index = (state = initialState, action) => {
                     delete task._id
                     return task
                 }),
-                loading: false
+                loading: false,
+                error: false
             }
 
         case ADD_TODO_FAILURE:
@@ -104,6 +107,7 @@ const Index = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
+                error: false,
                 tasks: [...state.tasks.map((task) => {
                     if (task.id === action.todo._id) {
                         task.completed = action.todo.completed
@@ -115,7 +119,8 @@ const Index = (state = initialState, action) => {
             return {
                 ...state,
                 tasks: [...state.tasks.filter(task => task.id !== action.id)],
-                loading: false
+                loading: false,
+                error: false
             }
 
         case ALL_TODO_DELETE_SUCCESS:
@@ -128,7 +133,8 @@ const Index = (state = initialState, action) => {
         case ERROR_MESSAGE:
             return {
                 ...state,
-                error: action.error
+                error: {...state.error, status: action.errStatus, data: action.errData},
+                loading: false
             }
 
         default:
@@ -136,4 +142,4 @@ const Index = (state = initialState, action) => {
     }
 }
 
-export default Index
+export default TaskReducer

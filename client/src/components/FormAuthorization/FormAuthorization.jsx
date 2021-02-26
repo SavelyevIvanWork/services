@@ -1,15 +1,15 @@
 import style from './FormAuthorization.module.css'
 import FormHeader from "./FormHeader/FormHeader";
 import {userLogin, userNameUpdate, userPasswordUpdate, userRegistration
-} from "../../reducers/FormReducer/action-creator";
+} from "../../reducers/AuthReducer/action-creator";
 import {useDispatch, useSelector} from "react-redux";
 import {Redirect} from "react-router-dom";
 
 const FormAuthorization = () => {
 
     const dispatch = useDispatch()
-    const {username, password, messages, error} = useSelector(state => state.FormReducer)
-    const isFetching = useSelector(state => state.FormReducer.isFetching)
+    const {username, password, messages, error} = useSelector(state => state.AuthReducer)
+    const isAuth = useSelector(state => state.AuthReducer.isAuth)
     const userRegistrationHandler = (e) => {
         e.preventDefault()
         dispatch(userRegistration(username, password))
@@ -77,7 +77,7 @@ const FormAuthorization = () => {
                         : <span className={`${style.message}`}>{messages.message}</span>
                 }
             </div>
-            {isFetching && <Redirect to="/todo"/> }
+            {isAuth && <Redirect to="/todo"/> }
         </div>
     )
 }

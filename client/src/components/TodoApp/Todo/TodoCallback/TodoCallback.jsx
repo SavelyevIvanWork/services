@@ -1,5 +1,5 @@
 import {Redirect, useLocation} from "react-router-dom";
-import {loginSuccessAC} from "../../../../reducers/FormReducer/action-creator";
+import {loginSuccessAC} from "../../../../reducers/AuthReducer/action-creator";
 import {useDispatch, useSelector} from "react-redux";
 import React from "react";
 
@@ -8,7 +8,6 @@ function useQuery() {
 }
 
 const TodoCallback = () => {
-    const {isFetching} = useSelector(state => state.FormReducer)
     const dispatch = useDispatch()
 
     const token = localStorage.setItem("Token", useQuery().get('token'));

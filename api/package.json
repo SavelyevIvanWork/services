@@ -4,6 +4,7 @@
   "description": "",
   "main": "app.js",
   "scripts": {
+    "build": "node app.js",
     "prettier": "prettier --write src/**/*.js",
     "start": "node ./bin/www",
     "dev": "nodemon app.js",

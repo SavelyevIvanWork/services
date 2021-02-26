@@ -1,11 +1,17 @@
 const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
-const {userCreateFb} = require("../models/userModel");
 const {userSearch} = require("../models/userModel");
 const {userCreate} = require("../models/userModel");
 const {validationResult} = require('express-validator')
 require('dotenv').config();
-const {generateAccessToken} = require("../generateAccessToken");
+
+
+const generateAccessToken = (id) => {
+    const payload = {
+        id
+    }
+    return jwt.sign(payload, process.env.SECRET_KEY, {expiresIn: '24h'})
+}
 
 exports.userRegistration = async function(req, res) {
     try {

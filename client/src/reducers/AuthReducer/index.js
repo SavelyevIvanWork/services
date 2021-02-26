@@ -6,14 +6,14 @@ import {
 const initialState = {
     username: '',
     password: '',
-    isFetching: localStorage.getItem("Token"),
+    isAuth: localStorage.getItem("Token"),
     loading: false,
     messages: {},
     error: '',
     token: ''
 }
 
-const Index = (state = initialState, action) => {
+const AuthReducer = (state = initialState, action) => {
     switch (action.type) {
         case USER_NAME_UPDATE:
             return {
@@ -55,7 +55,7 @@ const Index = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 token: action.token,
-                isFetching: true,
+                isAuth: true,
             }
 
         case LOGIN_FAILURE:
@@ -71,18 +71,18 @@ const Index = (state = initialState, action) => {
                 ...state,
                 loading: false,
                 error: action.error,
-                isFetching: action.isFetching,
+                isAuth: action.isAuth,
                 messages: {...state.messages = action.message}
             }
 
         case USER_LOGOUT:
             return {
                 ...state,
-                isFetching: localStorage.removeItem("Token"),
+                isAuth: false,
             }
         default:
             return state
     }
 }
 
-export default Index
+export default AuthReducer

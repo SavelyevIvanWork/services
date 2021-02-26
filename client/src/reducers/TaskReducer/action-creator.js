@@ -13,7 +13,8 @@ import {
 } from "./actions";
 import {ALL_TASK_DELETE} from "../FilterReducer/actions";
 import axios from "axios";
-import {authorizationFailureAC} from "../FormReducer/action-creator";
+import {authorizationFailureAC} from "../AuthReducer/action-creator";
+import store from "../../reducers";
 
 export const addTodoStarted = () => {
     return {type: ADD_TODO_STARTED}
@@ -38,34 +39,94 @@ export const setTodosActionCreator = (todos) => {
     return {type: SET_TODOS, todos}
 }
 
-export const errorMessage = (error) => {
-    return {type: ERROR_MESSAGE, error}
+export const errorMessage = (errStatus, errData) => {
+    return {type: ERROR_MESSAGE, errStatus, errData}
 }
 
-const axiosInstance = axios.create({
-    headers: {'Token': localStorage.getItem("Token")},
+// const fetching = () => {
+//     const axiosInstance = axios.create();
+//     axiosInstance.defaults.headers.common['Token'] = localStorage.getItem("Token");
+//     return axiosInstance;
+// }
+
+const dispatch = store.dispatch
+const axiosInst = axios.create()
+
+axiosInst.interceptors.request.use(function (config) {
+    config.headers.Token = localStorage.getItem("Token")
+    return config;
+}, function (err) {
+    return Promise.reject(err)
 })
 
-//Добавляем одну таску
+axiosInst.interceptors.response.use(function (response) {
+    return response;
+}, function (err) {
+    return Promise.reject(err)
+        .catch(err => {
+            if (err.response.status === 403) {
+                console.log('ошибка 403')
+                dispatch(authorizationFailureAC(err.message, err.response.data))
+            } else if (err.response.status === 410) {
+                dispatch(errorMessage(err.response.statusText, err.response.data))
+            } else {
+                console.log('ошибка')
+                dispatch(errorMessage(err.response.statusText, err.response.data))
+            }
+        });
+})
+
+// const response = await fetch(`/todo`, {
+//     method: 'POST',
+//     headers: {
+//         'Content-Type': 'application/json;charset=utf-8'
+//     },
+//     body: JSON.stringify({completed: true, message})
+// })
+// if (response.ok) {
+//     let json = await response.json();
+//     console.log(json)
+//     // .then(response => {
+//     //     dispatch(addTodoSuccess(response.data));
+//     // })
+// }
+
+class APIService {
+
+    post = (url, data, config) => {
+       return new Promise ((resolve,reject) => {
+           fetch(url).then(response => response.json().then(data) => resolve(data))
+       })
+    }
+    addTodoAll = () => {
+
+    }
+}
+
+const API = new APIService()
+
+
+// Добавляем одну таску
+// export const addTodoSuccess = (todo) => {
+//     return {type: ADD_TODO_SUCCESS, todo}
+// }
+// export const addTodo = (message) => (dispatch) => {
+//     dispatch(addTodoStarted());
+//     API.addTodo(message)
+// }
+
 export const addTodoSuccess = (todo) => {
     return {type: ADD_TODO_SUCCESS, todo}
 }
 export const addTodo = (message) => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .post(`/todo`, {
             completed: false,
             message
         })
         .then(response => {
             dispatch(addTodoSuccess(response.data));
-        })
-        .catch(err => {
-            if (err.response.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response.statusText));
-            }
         })
 }
 
@@ -75,18 +136,12 @@ export const addTodoALLSuccess = (todos) => {
 }
 export const addAllTodos = () => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .get(`/todo`)
         .then(response => {
             dispatch(addTodoALLSuccess(response.data));
         })
-        .catch(err => {
-            if (err.response.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response.statusText));
-            }
-        })
+        .catch(err => err)
 }
 
 // Комплитим одну таску
@@ -95,21 +150,18 @@ export const todoCompletedSuccess = (todo) => {
 }
 export const todoCompleted = (todoID, todoCompleted) => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .put(`/todo/${todoID}`, {
             id: todoID,
             completed: !todoCompleted,
         })
         .then(response => {
-            console.log(response.data)
             dispatch(todoCompletedSuccess(response.data));
         })
         .catch(err => {
-            if (err.response.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response.statusText));
-            }
+            // dispatch(errorMessage(err.response.statusText, err.response.data))
+            dispatch(todoDeleteSuccess(todoID))
+            return err
         })
 }
 
@@ -119,18 +171,12 @@ export const allTodoCompletedSuccess = () => {
 }
 export const allTodoCompleted = () => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .post(`/todo/all-todo-completed`)
         .then(response => {
             dispatch(allTodoCompletedSuccess(response.data));
         })
-        .catch(err => {
-            if (err.response.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response.statusText));
-            }
-        })
+        .catch(err => err)
 }
 
 // Удаляем одну таску
@@ -139,18 +185,12 @@ export const todoDeleteSuccess = (todoID) => {
 }
 export const todoDelete = (todoID) => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .delete(`/todo/${todoID}`)
         .then(response => {
             dispatch(todoDeleteSuccess(todoID));
         })
-        .catch(err => {
-            if (err.response.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response.statusText));
-            }
-        })
+        .catch(err => err)
 }
 
 // Удаляем все таски
@@ -159,16 +199,10 @@ export const allTodoDeleteSuccess = (todoID) => {
 }
 export const AllTodoDelete = () => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInstance
+    axiosInst
         .post(`/todo/all-todo-delete`)
         .then(response => {
             dispatch(allTodoDeleteSuccess());
         })
-        .catch(err => {
-            if (err.response?.status === 403) {
-                dispatch(authorizationFailureAC(err.message, err.response.data));
-            } else {
-                dispatch(errorMessage(err.response?.statusText));
-            }
-        })
+        .catch(err => err)
 }
