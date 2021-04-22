@@ -1,3 +1,7 @@
+* {
+    box-sizing: border-box;
+}
+
 .todo {
     position: relative;
     box-shadow: 3px 3px 15px 1px dimgray,-3px -3px 15px 1px lightgrey;

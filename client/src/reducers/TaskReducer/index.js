@@ -11,7 +11,11 @@ import {
 import {ALL_TASK_DELETE} from "../FilterReducer/actions"
 
 const initialState = {
-    tasks: [],
+    tasks: [
+        {id: 'task-1', content: 'Task-content_1', checked: true},
+        {id: 'task-2', content: 'Task-content_2', checked: true},
+        {id: 'task-3', content: 'Task-content_3', checked: true}
+        ],
     newTask: '',
     loading: false,
     error: false
@@ -120,7 +124,6 @@ const TaskReducer = (state = initialState, action) => {
                 ...state,
                 tasks: [...state.tasks.filter(task => task.id !== action.id)],
                 loading: false,
-                error: false
             }
 
         case ALL_TODO_DELETE_SUCCESS:
@@ -133,7 +136,7 @@ const TaskReducer = (state = initialState, action) => {
         case ERROR_MESSAGE:
             return {
                 ...state,
-                error: {...state.error, status: action.errStatus, data: action.errData},
+                error: {...state.error = action.error},
                 loading: false
             }
 

@@ -1,13 +1,16 @@
-import { AUTHORIZATION_FAILURE, LOADING_STARTED, LOGIN_FAILURE, LOGIN_SUCCESS, REGISTRATION_FAILURE,
-         REGISTRATION_SUCCESS, USER_LOGOUT, USER_NAME_UPDATE, USER_PASSWORD_UPDATE } from "./actions";
-import axios from "axios";
+import {
+    AUTHORIZATION_FAILURE, LOADING_STARTED, LOGIN_FAILURE, LOGIN_SUCCESS, REGISTRATION_FAILURE,
+    REGISTRATION_SUCCESS, USER_LOGOUT, USER_NAME_UPDATE, USER_PASSWORD_UPDATE
+} from "./actions";
+import TokenService from "../../services/TokenService";
+import ApiService from "../../services/ApiService";
 
-export const authorizationFailureAC = (error, message) => {
-    return {type: AUTHORIZATION_FAILURE, error, message}
+export const authorizationFailure = (error) => {
+    return {type: AUTHORIZATION_FAILURE, error}
 }
 
-export const userLogoutAC = () => {
-    localStorage.clear();
+export const userLogout = () => {
+    TokenService.removeToken()
     return {type: USER_LOGOUT}
 }
 
@@ -19,63 +22,53 @@ export const userPasswordUpdate = (password) => {
     return {type: USER_PASSWORD_UPDATE, password}
 }
 
-export const loadingStartedAC = () => {
+export const loadingStarted = () => {
     return {type: LOADING_STARTED}
 }
 
-export const registrationSuccessAC = (messages) => {
+export const registrationSuccess = (messages) => {
     return {type: REGISTRATION_SUCCESS, messages}
 }
 
-export const registrationFailureAC = (error) => {
-    return {type: REGISTRATION_FAILURE, error}
+export const registrationFailure = (err) => {
+    return {type: REGISTRATION_FAILURE, err}
 }
 
 export const userRegistration = (username, password) => (dispatch) => {
-    dispatch(loadingStartedAC());
-    axios
+    dispatch(loadingStarted());
+    ApiService
         .post(`/todo/registration`, {
             username,
             password
         })
         .then(response => {
-            dispatch(registrationSuccessAC(response.data));
+            dispatch(registrationSuccess(response));
         })
         .catch(err => {
-            if (err.response) {
-                dispatch(registrationFailureAC(err.message))
-                dispatch(registrationSuccessAC(err.response.data))
-            } else {
-                dispatch(registrationFailureAC(err.message))
-            }
+            dispatch(registrationFailure(err))
         })
 }
 
-export const loginSuccessAC = (token) => {
+export const loginSuccess = (token) => {
     return {type: LOGIN_SUCCESS, token}
 }
-export const loginFailureAC = (error, message) => {
-    return {type: LOGIN_FAILURE, error, message}
+export const loginFailure = (err) => {
+    return {type: LOGIN_FAILURE, err}
 }
 
 export const userLogin = (username, password) => (dispatch) => {
-    dispatch(loadingStartedAC());
-    axios
+    dispatch(loadingStarted())
+    ApiService
         .post(`/todo/login`, {
             username,
             password
         })
         .then(response => {
-            localStorage.setItem("Token", response.data.token);
-            dispatch(loginSuccessAC(response.data));
+            TokenService.setToken(response.token)
+            dispatch(loginSuccess(response.token))
         })
         .catch(err => {
-            console.log(err.response)
-            if (err.response) {
-                dispatch(loginFailureAC(err.message, err.response.data))
-
-            } else {
-                dispatch(loginFailureAC(err.message))
-            }
+            console.log(err)
+            dispatch(loginFailure(err))
         })
 }

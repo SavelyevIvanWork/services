@@ -13,8 +13,9 @@ import {
 } from "./actions";
 import {ALL_TASK_DELETE} from "../FilterReducer/actions";
 import axios from "axios";
-import {authorizationFailureAC} from "../AuthReducer/action-creator";
+import {authorizationFailure} from "../AuthReducer/action-creator";
 import store from "../../reducers";
+import ApiService from "../../services/ApiService";
 
 export const addTodoStarted = () => {
     return {type: ADD_TODO_STARTED}
@@ -39,15 +40,9 @@ export const setTodosActionCreator = (todos) => {
     return {type: SET_TODOS, todos}
 }
 
-export const errorMessage = (errStatus, errData) => {
-    return {type: ERROR_MESSAGE, errStatus, errData}
+export const errorMessage = (error) => {
+    return {type: ERROR_MESSAGE, error}
 }
-
-// const fetching = () => {
-//     const axiosInstance = axios.create();
-//     axiosInstance.defaults.headers.common['Token'] = localStorage.getItem("Token");
-//     return axiosInstance;
-// }
 
 const dispatch = store.dispatch
 const axiosInst = axios.create()
@@ -66,7 +61,7 @@ axiosInst.interceptors.response.use(function (response) {
         .catch(err => {
             if (err.response.status === 403) {
                 console.log('ошибка 403')
-                dispatch(authorizationFailureAC(err.message, err.response.data))
+                dispatch(authorizationFailure(err.message, err.response.data))
             } else if (err.response.status === 410) {
                 dispatch(errorMessage(err.response.statusText, err.response.data))
             } else {
@@ -76,72 +71,33 @@ axiosInst.interceptors.response.use(function (response) {
         });
 })
 
-// const response = await fetch(`/todo`, {
-//     method: 'POST',
-//     headers: {
-//         'Content-Type': 'application/json;charset=utf-8'
-//     },
-//     body: JSON.stringify({completed: true, message})
-// })
-// if (response.ok) {
-//     let json = await response.json();
-//     console.log(json)
-//     // .then(response => {
-//     //     dispatch(addTodoSuccess(response.data));
-//     // })
-// }
-
-class APIService {
-
-    post = (url, data, config) => {
-       return new Promise ((resolve,reject) => {
-           fetch(url).then(response => response.json().then(data) => resolve(data))
-       })
-    }
-    addTodoAll = () => {
-
-    }
-}
-
-const API = new APIService()
-
-
-// Добавляем одну таску
-// export const addTodoSuccess = (todo) => {
-//     return {type: ADD_TODO_SUCCESS, todo}
-// }
-// export const addTodo = (message) => (dispatch) => {
-//     dispatch(addTodoStarted());
-//     API.addTodo(message)
-// }
-
-export const addTodoSuccess = (todo) => {
-    return {type: ADD_TODO_SUCCESS, todo}
-}
-export const addTodo = (message) => (dispatch) => {
-    dispatch(addTodoStarted());
-    axiosInst
-        .post(`/todo`, {
-            completed: false,
-            message
-        })
-        .then(response => {
-            dispatch(addTodoSuccess(response.data));
-        })
-}
-
-//  Добавляем все таски при загрузке
+ // Добавляем все таски при загрузке
 export const addTodoALLSuccess = (todos) => {
     return {type: ADD_TODO_ALL_SUCCESS, todos}
 }
 export const addAllTodos = () => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInst
+    ApiService
         .get(`/todo`)
         .then(response => {
-            dispatch(addTodoALLSuccess(response.data));
+            dispatch(addTodoALLSuccess(response))
         })
-        .catch(err => err)
+}
+
+// Добавляем одну таску
+export const addTodoSuccess = (todo) => {
+    return {type: ADD_TODO_SUCCESS, todo}
+}
+export const addTodo = (message) => (dispatch) => {
+    dispatch(addTodoStarted())
+    ApiService
+        .post(`/todo`, {
+            completed: false,
+            message
+        })
+        .then(response => {
+            dispatch(addTodoSuccess(response))
+        })
 }
 
 // Комплитим одну таску
@@ -149,19 +105,19 @@ export const todoCompletedSuccess = (todo) => {
     return {type: TODO_COMPLETED_SUCCESS, todo}
 }
 export const todoCompleted = (todoID, todoCompleted) => (dispatch) => {
-    dispatch(addTodoStarted());
-    axiosInst
+    dispatch(addTodoStarted())
+    ApiService
         .put(`/todo/${todoID}`, {
             id: todoID,
-            completed: !todoCompleted,
+            completed: !todoCompleted
         })
         .then(response => {
-            dispatch(todoCompletedSuccess(response.data));
+            console.log(response)
+            dispatch(todoCompletedSuccess(response))
         })
         .catch(err => {
-            // dispatch(errorMessage(err.response.statusText, err.response.data))
+            dispatch(errorMessage(err))
             dispatch(todoDeleteSuccess(todoID))
-            return err
         })
 }
 
@@ -170,13 +126,12 @@ export const allTodoCompletedSuccess = () => {
     return {type: ALL_TODO_COMPLETED_SUCCESS}
 }
 export const allTodoCompleted = () => (dispatch) => {
-    dispatch(addTodoStarted());
-    axiosInst
+    dispatch(addTodoStarted())
+    ApiService
         .post(`/todo/all-todo-completed`)
         .then(response => {
-            dispatch(allTodoCompletedSuccess(response.data));
+            dispatch(allTodoCompletedSuccess(response))
         })
-        .catch(err => err)
 }
 
 // Удаляем одну таску
@@ -185,12 +140,11 @@ export const todoDeleteSuccess = (todoID) => {
 }
 export const todoDelete = (todoID) => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInst
+    ApiService
         .delete(`/todo/${todoID}`)
         .then(response => {
-            dispatch(todoDeleteSuccess(todoID));
+            dispatch(todoDeleteSuccess(todoID))
         })
-        .catch(err => err)
 }
 
 // Удаляем все таски
@@ -199,10 +153,9 @@ export const allTodoDeleteSuccess = (todoID) => {
 }
 export const AllTodoDelete = () => (dispatch) => {
     dispatch(addTodoStarted());
-    axiosInst
+    ApiService
         .post(`/todo/all-todo-delete`)
         .then(response => {
             dispatch(allTodoDeleteSuccess());
         })
-        .catch(err => err)
 }

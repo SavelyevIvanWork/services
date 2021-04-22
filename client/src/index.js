@@ -5,7 +5,9 @@ import App from './App';
 
 import store from "./reducers";
 import {Provider} from "react-redux";
+import TokenService from './services/TokenService'
 
+TokenService.subscribe((data) => data)
 
 ReactDOM.render(
     <Provider store={store}>

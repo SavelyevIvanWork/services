@@ -9,7 +9,7 @@ const initialState = {
     isAuth: localStorage.getItem("Token"),
     loading: false,
     messages: {},
-    error: '',
+    error: null,
     token: ''
 }
 
@@ -46,8 +46,7 @@ const AuthReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                error: action.error,
-                messages: {...state.messages = action.messages}
+                error: action.err,
             }
 
         case LOGIN_SUCCESS:
@@ -62,17 +61,16 @@ const AuthReducer = (state = initialState, action) => {
             return {
                 ...state,
                 loading: false,
-                error: action.error,
-                messages: {...state.messages = action.message}
+                error: {...state.error = action.err},
             }
 
         case AUTHORIZATION_FAILURE:
             return {
                 ...state,
                 loading: false,
-                error: action.error,
-                isAuth: action.isAuth,
-                messages: {...state.messages = action.message}
+                error: action.error.message,
+                isAuth: action.error.isAuth,
+                messages: {...state.message = action.error}
             }
 
         case USER_LOGOUT:

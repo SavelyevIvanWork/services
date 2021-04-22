@@ -1,4 +1,4 @@
-import {userLogoutAC} from "../../../reducers/AuthReducer/action-creator";
+import {userLogout} from "../../../reducers/AuthReducer/action-creator";
 import {useDispatch} from "react-redux";
 
 const Header = () => {
@@ -8,7 +8,7 @@ const Header = () => {
             <h3 className="title">Your todo list</h3>
             <button
                 className="btn__logout"
-                onClick={()=> dispatch(userLogoutAC())}
+                onClick={()=> dispatch(userLogout())}
             >
                 Log out
             </button>

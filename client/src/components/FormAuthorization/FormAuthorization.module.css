@@ -83,3 +83,7 @@
     webkit-transform: rotate(-45deg);
     transform: rotate(-45deg);
 }
+
+.message__error--done {
+    display: none;
+}

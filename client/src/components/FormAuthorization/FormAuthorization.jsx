@@ -20,9 +20,9 @@ const FormAuthorization = () => {
         dispatch(userLogin(username, password))
     }
 
-    const err = (messages) => {
-        if (messages.errors) {
-            return messages.errors.errors.map(err => err.msg)
+    const err = (error) => {
+        if (error.errors) {
+            return error.errors.errors.map(err => err.msg)
         }
     }
 
@@ -69,12 +69,11 @@ const FormAuthorization = () => {
                     </div>
                 </form>
                 {
-                    error ? <div>
-                            <span className={`${style.message} ${style.message__error}`}>{messages.message}</span>
-                            {messages.errors && err(messages).map(error => <span
-                                className={`${style.message} ${style.message__error}`}>{error}</span>)}
+                    error && <div>
+                            <span className={`${style.message} ${style.message__error}`}>{error.message}</span>
+                            {error.errors && err(error).map(message => <span
+                                className={`${style.message} ${style.message__error}`}>{message}</span>)}
                         </div>
-                        : <span className={`${style.message}`}>{messages.message}</span>
                 }
             </div>
             {isAuth && <Redirect to="/todo"/> }

@@ -1,6 +1,6 @@
 import {Redirect, useLocation} from "react-router-dom";
-import {loginSuccessAC} from "../../../../reducers/AuthReducer/action-creator";
-import {useDispatch, useSelector} from "react-redux";
+import {loginSuccess} from "../../../../reducers/AuthReducer/action-creator";
+import {useDispatch} from "react-redux";
 import React from "react";
 
 function useQuery() {
@@ -11,7 +11,7 @@ const TodoCallback = () => {
     const dispatch = useDispatch()
 
     const token = localStorage.setItem("Token", useQuery().get('token'));
-    dispatch(loginSuccessAC(token))
+    dispatch(loginSuccess(token))
 
     return <Redirect from='/' to='/todo'/>
 }
