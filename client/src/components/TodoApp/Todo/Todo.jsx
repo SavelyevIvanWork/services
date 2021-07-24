@@ -74,9 +74,7 @@ const Todo = () => {
             <div className="todo__list">
                 <ul>
                     {
-                        memo.map((task) => <TodoItem
-                            task={task}
-                            key={task.id}
+                        memo.map((task) => <TodoItem task={task} key={task.id}
                         />)
                     }
 
